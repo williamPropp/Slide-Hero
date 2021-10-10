@@ -31,8 +31,8 @@ options = {
     x: 100,
     y: 100,
   },
-  theme: "pixel",
-  seed: 77,
+  theme: "crt",
+  seed: 2,
   isPlayingBgm: true,
 };
 
@@ -102,15 +102,16 @@ class Note {
   }
 }
 
+// let allcolors = ["black","blue","cyan","green","light_black","light_blue","light_cyan","light_green","light_purple","light_red","light_yellow","purple","red","yellow"];
+// let allsounds = ["coin","laser","explosion","powerUp","hit","jump","select","lucky"]
+
 let noteArray = [];
 
 let tickCount = 0;
 
-let allcolors = ["black","blue","cyan","green","light_black","light_blue","light_cyan","light_green","light_purple","light_red","light_yellow","purple","red","yellow"];
-// let allsounds = ["coin","laser","explosion","powerUp","hit","jump","select","lucky"]
-// let notesounds = ["coin","hit","laser","select","coin"];
-
 let hearts = 3;
+let multiplier = 1;
+let streakCounter = 0;
 
 let sqr1x = 46-18-18;
 let sqr2x = 46-18;
@@ -119,6 +120,10 @@ let sqr4x = 46+18;
 let sqr5x = 46+18+18;
 let sqry = 81;
 let sqrw = 12;
+
+let heart1x = 9;
+let heart2x = 16;
+let heart3x = 23;
 
 
 function update() {
@@ -141,12 +146,31 @@ function update() {
   //Score and Bounds Detection
   remove(noteArray, (n) => {
     if(n.collisionTest()) {
-      addScore(1);
+      streakCounter++;
+      let scoreToAdd = 1*multiplier;
+      addScore(scoreToAdd, ptr.x, ptr.y);
+      if(streakCounter % 10 == 0) {
+        multiplier = streakCounter / 10;
+      }
+      if(score > 1000) {
+        heart1x = 9+6+6+6;
+        heart2x = 16+6+6;
+        heart3x = 23+6+6+6;
+      } else if(score > 100) {
+        heart1x = 9+6+6;
+        heart2x = 16+6+6;
+        heart3x = 23+6+6;
+      } else if(score > 10) {
+        heart1x = 9+6;
+        heart2x = 16+6;
+        heart3x = 23+6;
+      }
       color(n.color);
       particle(n.x,n.y);
       play("coin");
       return true;
     } else if(n.y> 100){
+      streakCounter = 0;
       play("explosion");
       hearts--;
       return true;
@@ -156,29 +180,34 @@ function update() {
   });
 
   //HEARTS
-  if(hearts > 2) {
+  if(hearts == 3) {
     color("red");
-    char("b", 15,3);
-    char("b", 22,3);
-    char("b", 29,3);
-  } else if(hearts > 1) {
+    char("b", heart1x,3);
+    char("b", heart2x,3);
+    char("b", heart3x,3);
+  } else if(hearts == 2) {
     color("red");
-    char("b", 15,3);
-    char("b", 22,3);
-    char("c", 29,3);
-  } else if(hearts > 0) {
+    char("b", heart1x,3);
+    char("b", heart2x,3);
+    char("c", heart3x,3);
+  } else if(hearts == 1) {
     color("red");
-    char("b", 15,3);
-    char("c", 22,3);
-    char("c", 29,3);
-  } else if(hearts < 1) {
+    char("b", heart1x,3);
+    char("c", heart2x,3);
+    char("c", heart3x,3);
+  } else if(hearts == 0) {
     color("red");
-    char("c", 15,3);
-    char("c", 22,3);
-    char("c", 29,3);
+    char("c", heart1x,3);
+    char("c", heart2x,3);
+    char("c", heart3x,3);
+    reset();
     end();
   }
-  
+
+  //STREAK + MULTIPLIER TEXT
+  color("black");
+  text("STRK : " + streakCounter, 26,23);
+  text("multi " + multiplier + "x", 26,29);
   
   //ARRAY of TARGETS
   color("black");
@@ -251,4 +280,14 @@ function spawnNote(){
   let f = 1; //fallSpeed
   let newNote = new Note(x,y,w,p,c,f);
   noteArray.push(newNote);
+}
+
+function reset() {
+  tickCount = 0;
+  hearts = 3;
+  multiplier = 1;
+  streakCounter = 0;
+  heart1x = 9;
+  heart2x = 16;
+  heart3x = 23;
 }
