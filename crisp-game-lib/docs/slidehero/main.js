@@ -32,7 +32,7 @@ options = {
     y: 100,
   },
   theme: "crt",
-  seed: 2,
+  seed: 69,
   isPlayingBgm: true,
 };
 
@@ -152,7 +152,7 @@ function update() {
       if(streakCounter % 10 == 0) {
         multiplier = streakCounter / 10;
       }
-      if(score > 1000) {
+      if(score > 1000) { //MOVE HEARTS TO DISPLAY WHEN SCORE INCREASES
         heart1x = 9+6+6+6;
         heart2x = 16+6+6;
         heart3x = 23+6+6+6;
@@ -169,8 +169,9 @@ function update() {
       particle(n.x,n.y);
       play("coin");
       return true;
-    } else if(n.y> 100){
+    } else if(n.y> 100){ //IF COLLISION CHECK FAILS, DESTROY WHEN OFFSCREEN
       streakCounter = 0;
+      multiplier = 1;
       play("explosion");
       hearts--;
       return true;
@@ -179,7 +180,7 @@ function update() {
     }
   });
 
-  //HEARTS
+  //HEARTS DISPLAY
   if(hearts == 3) {
     color("red");
     char("b", heart1x,3);
@@ -230,6 +231,7 @@ function update() {
   (mouseX > 49+18+18-4 && mouseX < 49+18+18+13) ? ptr.move(4) : mouseX = mouseX;
 }
 
+//DRAW EMPTY RECTANGLE
 function emptyRect(x,y,w,h){
   w-=1;
   x-=1;
@@ -239,7 +241,7 @@ function emptyRect(x,y,w,h){
     line(x+w,y, x+w, y+w);
     line(x+w, y+w, x, y+w);
     line(x, y+w, x, y);
-  } else {
+  } else { //DRAW SQUARE
     h-=1;
     line(x,y,x+w,y);
     line(x+w,y, x+w, y+h);
@@ -248,10 +250,12 @@ function emptyRect(x,y,w,h){
   }
 }
 
+//SELECT RANDOM ITEM FROM ARRAY
 function randItem(selectedArray) {
   return selectedArray[Math.floor(Math.random()*selectedArray.length)];
 }
 
+//RANDOMLY SPAWN NOTES
 function spawnChance(){
   let seed = Math.random();
   let bool = false;
@@ -265,6 +269,7 @@ function spawnChance(){
   return bool;
 }
 
+//SPAWN NOTE
 function spawnNote(){
   let xArray = [11,29,47,65,83];
   let w = 6; //width
@@ -282,6 +287,7 @@ function spawnNote(){
   noteArray.push(newNote);
 }
 
+//RESET GLOBAL VALUES FOR NEW GAME
 function reset() {
   tickCount = 0;
   hearts = 3;
