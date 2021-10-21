@@ -2,6 +2,7 @@ title = "Slide Hero";
 
 description = ` [slide] to move`;
 
+//Declare character sprites
 characters = [
   `
   l  l
@@ -25,6 +26,7 @@ characters = [
  `,
 ];
 
+//Set up options
 options = {
   isReplayEnabled: true,
   viewSize: {
@@ -44,18 +46,18 @@ let ptr = {
   dir: 1,
   diff: 18,
   move(t){
-    if(t == null){
+    /*if(t == null){
       this.x += this.dir*this.diff;
       if(this.x == this.initx + (this.diff*2) || this.x == this.initx - (this.diff*2)) {
         this.dir *= -1;
       }
-    } else {
+    } else {*/
       (t == 0) ? this.x = 49-18-18 : t = t;
       (t == 1) ? this.x = 49-18 : t = t;
       (t == 2) ? this.x = 49 : t = t;
       (t == 3) ? this.x = 49+18 : t = t;
       (t == 4) ? this.x = 49+18+18 : t = t;
-    }
+    /*}*/
   },
   currentSpace(){
     if(this.x == this.initx) {
@@ -92,8 +94,6 @@ class Note {
   collisionTest(){
     if(this.y == 82){
       if(ptr.currentSpace() == this.posIndex){
-        // let soundStr = notesounds[this.posIndex]
-        // play(soundStr);
         return true;
       } else {
         return false;
@@ -101,9 +101,6 @@ class Note {
     }
   }
 }
-
-// let allcolors = ["black","blue","cyan","green","light_black","light_blue","light_cyan","light_green","light_purple","light_red","light_yellow","purple","red","yellow"];
-// let allsounds = ["coin","laser","explosion","powerUp","hit","jump","select","lucky"]
 
 let noteArray = [];
 
@@ -138,21 +135,21 @@ function update() {
   }
 
   //Draw notes
-  for(const element of noteArray) {
-    element.draw();
-    element.update();
+  for(const note of noteArray) {
+    note.draw();
+    note.update();
   }
 
   //Score and Bounds Detection
   remove(noteArray, (n) => {
-    if(n.collisionTest()) {
+    if(n.collisionTest()) { //If collision check return true, score!
       streakCounter++;
       let scoreToAdd = 1*multiplier;
       addScore(scoreToAdd, ptr.x, ptr.y);
       if(streakCounter % 10 == 0) {
         multiplier = streakCounter / 10;
       }
-      if(score >= 1000) { //MOVE HEARTS TO DISPLAY WHEN SCORE INCREASES
+      if(score >= 1000) { //Move hearts to the right when score increases by power of 10
         heart1x = 9+6+6+6;
         heart2x = 16+6+6;
         heart3x = 23+6+6+6;
@@ -169,7 +166,7 @@ function update() {
       particle(n.x,n.y);
       play("coin");
       return true;
-    } else if(n.y> 100){ //IF COLLISION CHECK FAILS, DESTROY WHEN OFFSCREEN
+    } else if(n.y> 100){ //If collision check fails, destroy when offscreen
       streakCounter = 0;
       multiplier = 1;
       play("explosion");
@@ -180,37 +177,64 @@ function update() {
     }
   });
 
-  //HEARTS DISPLAY
-  if(hearts == 3) {
-    color("red");
-    char("b", heart1x,3);
-    char("b", heart2x,3);
-    char("b", heart3x,3);
-  } else if(hearts == 2) {
-    color("red");
-    char("b", heart1x,3);
-    char("b", heart2x,3);
-    char("c", heart3x,3);
-  } else if(hearts == 1) {
-    color("red");
-    char("b", heart1x,3);
-    char("c", heart2x,3);
-    char("c", heart3x,3);
-  } else if(hearts == 0) {
-    color("red");
-    char("c", heart1x,3);
-    char("c", heart2x,3);
-    char("c", heart3x,3);
-    reset();
-    end();
+  // //Display hearts
+  // if(hearts == 3) {
+  //   color("red");
+  //   char("b", heart1x,3);
+  //   char("b", heart2x,3);
+  //   char("b", heart3x,3);
+  // } else if(hearts == 2) {
+  //   color("red");
+  //   char("b", heart1x,3);
+  //   char("b", heart2x,3);
+  //   char("c", heart3x,3);
+  // } else if(hearts == 1) {
+  //   color("red");
+  //   char("b", heart1x,3);
+  //   char("c", heart2x,3);
+  //   char("c", heart3x,3);
+  // } else if(hearts == 0) {
+  //   color("red");
+  //   char("c", heart1x,3);
+  //   char("c", heart2x,3);
+  //   char("c", heart3x,3);
+  //   reset();
+  //   end();
+  // }
+
+  //Display hearts
+  color("red");
+  switch(hearts){
+    case 3:
+      char("b", heart1x,3);
+      char("b", heart2x,3);
+      char("b", heart3x,3);
+      break;
+    case 2:
+      char("b", heart1x,3);
+      char("b", heart2x,3);
+      char("c", heart3x,3);
+      break;
+    case 1:
+      char("b", heart1x,3);
+      char("c", heart2x,3);
+      char("c", heart3x,3);
+      break;
+    case 0:
+      char("c", heart1x,3);
+      char("c", heart2x,3);
+      char("c", heart3x,3);
+      reset();
+      end();
+      break;
   }
 
-  //STREAK + MULTIPLIER TEXT
+  //Draw streak + multiplier text
   color("black");
   text("STRK : " + streakCounter, 26,23);
   text("multi " + multiplier + "x", 26,29);
   
-  //ARRAY of TARGETS
+  //Array of targets (empty squares)
   color("black");
   emptyRect(sqr1x,sqry,sqrw);
   emptyRect(sqr2x,sqry,sqrw);
@@ -218,11 +242,11 @@ function update() {
   emptyRect(sqr4x,sqry,sqrw);
   emptyRect(sqr5x,sqry,sqrw);
 
-  //CURSOR/POINTER
+  //Draw cursor/pointer
   color("black");
   char("a",ptr.x,ptr.y);
 
-  //MOVE CURSOR/POINTER
+  //Move cursor/pointer
   let mouseX = input.pos.x;
   (mouseX > 49-18-18-4 && mouseX < 49-18-18+13) ? ptr.move(0) : mouseX = mouseX;
   (mouseX > 49-18-4 && mouseX < 49-18+13) ? ptr.move(1) : mouseX = mouseX;
@@ -231,7 +255,7 @@ function update() {
   (mouseX > 49+18+18-4 && mouseX < 49+18+18+13) ? ptr.move(4) : mouseX = mouseX;
 }
 
-//DRAW EMPTY RECTANGLE
+//Draw empty rectangle
 function emptyRect(x,y,w,h){
   w-=1;
   x-=1;
@@ -241,7 +265,7 @@ function emptyRect(x,y,w,h){
     line(x+w,y, x+w, y+w);
     line(x+w, y+w, x, y+w);
     line(x, y+w, x, y);
-  } else { //DRAW SQUARE
+  } else { //Draw a square when only width value is provided
     h-=1;
     line(x,y,x+w,y);
     line(x+w,y, x+w, y+h);
@@ -250,12 +274,12 @@ function emptyRect(x,y,w,h){
   }
 }
 
-//SELECT RANDOM ITEM FROM ARRAY
+//Select random item from array
 function randItem(selectedArray) {
   return selectedArray[Math.floor(Math.random()*selectedArray.length)];
 }
 
-//RANDOMLY SPAWN NOTES
+//Randomly spawn notes
 function spawnChance(){
   let seed = Math.random();
   let bool = false;
@@ -269,12 +293,12 @@ function spawnChance(){
   return bool;
 }
 
-//SPAWN NOTE
+//Spawn note
 function spawnNote(){
   let xArray = [11,29,47,65,83];
   let w = 6; //width
   let x = randItem(xArray); //x value
-  let y = 0-w; //y value
+  let y = 0-w; //y value 
   let p = xArray.indexOf(x); //pointer lane
   let c; //color
   (p == 0) ? c = "green" : c = c;
@@ -287,7 +311,7 @@ function spawnNote(){
   noteArray.push(newNote);
 }
 
-//RESET GLOBAL VALUES FOR NEW GAME
+//Reset global values for new game
 function reset() {
   tickCount = 0;
   hearts = 3;
@@ -297,7 +321,7 @@ function reset() {
   heart2x = 16;
   heart3x = 23;
 
-  remove(noteArray, (n) => {
+  remove(noteArray, (n) => { //Delete all the old notes before the new game starts
     return true;
   });
 }
